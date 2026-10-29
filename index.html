@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Embedded Protocols: wired and wireless</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cpath d='M6 40h12V22h14v18h12V22h14' fill='none' stroke='%2300867a' stroke-width='6'/%3E%3C/svg%3E">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;700;800&family=Figtree:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f5f1;--sf:#fff;--ink:#101a17;--mute:#58655f;--line:#d6ddd5;--a:#00867a;--c1:#0a7ea4;--c2:#c2185b;--c3:#a86a00;--grid:rgba(16,26,23,.07);--hdr:rgba(243,245,241,.86);--code:#eef2ec;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#061110;--sf:#0d1b19;--ink:#e6f2ee;--mute:#8fa8a0;--line:#1c332f;--a:#2ef2c8;--c1:#38d4ff;--c2:#ff5fa8;--c3:#ffcb3d;--grid:rgba(120,255,225,.06);--hdr:rgba(6,17,16,.86);--code:#0a1614;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#061110;--sf:#0d1b19;--ink:#e6f2ee;--mute:#8fa8a0;--line:#1c332f;--a:#2ef2c8;--c1:#38d4ff;--c2:#ff5fa8;--c3:#ffcb3d;--grid:rgba(120,255,225,.06);--hdr:rgba(6,17,16,.86);--code:#0a1614;color-scheme:dark}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:calc(env(safe-area-inset-top,0px) + 70px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.65 Figtree,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--hdr);backdrop-filter:blur(14px);z-index:30}
+h1,h2,h3{font-family:Sora,system-ui,sans-serif;margin:0;letter-spacing:-.025em;line-height:1.08}
+header{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--hdr);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.bar{position:absolute;left:0;bottom:-1px;height:2px;width:100%;background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3));transform:scaleX(0);transform-origin:0 50%;will-change:transform}
+nav{max-width:1080px;margin:auto;display:flex;align-items:center;gap:4px;padding:10px 20px;overflow-x:auto;scrollbar-width:none}
+nav b{font:800 17px Sora;margin-right:auto;white-space:nowrap}
+nav a,nav button{color:var(--mute);text-decoration:none;font:500 15px Figtree;padding:6px 12px;border-radius:99px;border:0;background:none;cursor:pointer;white-space:nowrap;transition:background .25s,color .25s}
+nav a:hover,nav button:hover{background:var(--grid);color:var(--ink)}
+:focus-visible{outline:2px solid var(--a);outline-offset:2px}
+main{max-width:1080px;margin:auto;padding:0 20px}
+section{padding:80px 0 10px}
+.top{padding:56px 0 0}
+h1{font-size:clamp(40px,7vw,80px);font-weight:800;max-width:14ch}
+h2{font-size:clamp(28px,4.6vw,46px);font-weight:700}
+.lead{color:var(--mute);max-width:58ch;margin:14px 0 26px}
+.card{background:var(--sf);border:1px solid var(--line);border-radius:20px}
+/* lab */
+.lab{margin-top:34px;padding:18px}
+.ctl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:14px}
+.pill{border:1.5px solid var(--line);background:none;color:var(--mute);font:600 15px Figtree;padding:8px 18px;border-radius:99px;cursor:pointer;transition:all .3s}
+.pill[aria-pressed=true]{background:var(--a);border-color:var(--a);color:var(--bg)}
+.hexw{display:flex;align-items:center;gap:8px;margin-left:auto;color:var(--mute);font-size:15px}
+input{font:600 16px ui-monospace,Consolas,monospace;width:88px;padding:8px 12px;border-radius:12px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);text-transform:uppercase;transition:border-color .25s,box-shadow .25s}
+input:focus{outline:0;border-color:var(--a);box-shadow:0 0 0 4px var(--grid)}
+.go{border:0;border-radius:99px;padding:9px 22px;font:600 15px Figtree;background:var(--ink);color:var(--bg);cursor:pointer;transition:transform .25s}
+.go:hover{transform:translateY(-2px)}.go:active{transform:scale(.96)}
+.scope{overflow-x:auto;border-radius:14px;background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:24px 24px;border:1px solid var(--line)}
+svg{display:block;min-width:720px;width:100%;height:auto}
+svg text{font-family:Figtree,sans-serif;fill:var(--ink)}
+.tr{fill:none;stroke-width:2.6;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.9s cubic-bezier(.45,0,.2,1) forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+.lb{opacity:0;animation:fi .5s forwards}
+@keyframes fi{to{opacity:1}}
+.note{color:var(--mute);font-size:15px;margin:12px 4px 0;min-height:48px}
+/* guide */
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.gp{padding:26px 28px}.gp.in{animation:up .5s cubic-bezier(.22,1,.36,1)}
+@keyframes up{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.gp h3{font-size:30px}.gp .tg{color:var(--mute);margin:8px 0 18px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+dl{display:grid;grid-template-columns:104px 1fr;gap:8px 14px;margin:0}dt{color:var(--mute)}dd{margin:0;font-weight:500}
+ul{margin:0;padding-left:20px}li{margin-bottom:7px}
+.cw{position:relative;margin-top:22px}
+pre{margin:0;background:var(--code);border:1px solid var(--line);border-radius:14px;padding:16px;overflow-x:auto;font:14px/1.6 ui-monospace,Consolas,monospace}
+.cp{position:absolute;right:10px;top:10px;border:1px solid var(--line);background:var(--sf);color:var(--mute);border-radius:10px;padding:4px 12px;font:600 13px Figtree;cursor:pointer;transition:all .25s}
+.cp:hover{color:var(--ink);border-color:var(--a)}
+.fr{display:flex;height:44px;border-radius:12px;overflow:hidden;margin-top:20px;gap:2px}
+.fr i{font:600 11.5px Figtree;font-style:normal;display:grid;place-items:center;color:#04120f;background:var(--c);flex-grow:0;flex-basis:0;overflow:hidden;white-space:nowrap;transition:flex-grow .9s cubic-bezier(.22,1,.36,1)}
+.fr.on i{flex-grow:var(--w)}
+/* compare */
+.tw{overflow-x:auto;border-radius:20px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:15px}
+th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line)}
+th{font:700 14px Sora;color:var(--mute)}td:first-child{font:700 15px Sora;color:var(--a)}
+tr:last-child td{border:0}
+/* cards */
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.fc{perspective:900px;border:0;background:none;padding:0;height:250px;cursor:pointer;font:inherit;color:inherit;text-align:left}
+.fc>i{display:block;font-style:normal;position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .8s cubic-bezier(.22,1,.36,1);will-change:transform}
+.fc[aria-pressed=true]>i{transform:rotateY(180deg)}
+.fc span{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;padding:20px;background:var(--sf);border:1px solid var(--line);display:flex;align-items:center;font-size:15.5px;overflow:auto}
+.fc span:first-child{font:700 19px/1.25 Sora}
+.fc span+span{transform:rotateY(180deg);border-color:var(--a)}
+footer{text-align:center;color:var(--mute);padding:70px 20px 50px;font-size:15px}
+@media (max-width:760px){.cols{grid-template-columns:1fr}.hexw{margin-left:0}.gp{padding:20px}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important;scroll-behavior:auto!important}}
+
+/* polish */
+button{-webkit-tap-highlight-color:transparent}
+body{transition:background-color .4s,color .4s;background-image:radial-gradient(900px 480px at 88% -8%,color-mix(in srgb,var(--a) 15%,transparent),transparent 70%),radial-gradient(700px 420px at -6% 6%,color-mix(in srgb,var(--c2) 10%,transparent),transparent 70%);background-repeat:no-repeat}
+h1{background:linear-gradient(100deg,var(--ink) 35%,var(--a) 75%,var(--c1));-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;color:transparent;padding-bottom:.08em}
+.card{transition:background-color .4s,border-color .4s,box-shadow .5s}
+.lab:hover,.gp:hover{border-color:color-mix(in srgb,var(--a) 45%,var(--line));box-shadow:0 18px 50px -30px var(--a)}
+.pill{transition:background .3s,border-color .3s,color .3s,transform .2s}
+.pill:hover{border-color:var(--a);color:var(--ink)}.pill[aria-pressed=true]:hover{color:var(--bg)}.pill:active{transform:scale(.96)}
+.js .rv{opacity:0;transform:translateY(26px);transition:opacity .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1)}
+.js .rv.show{opacity:1;transform:none}
+.gp.in dl{animation:up .6s cubic-bezier(.22,1,.36,1) .05s backwards}
+.gp.in li{animation:up .6s cubic-bezier(.22,1,.36,1) backwards}
+.gp.in li:nth-child(2){animation-delay:.06s}.gp.in li:nth-child(3){animation-delay:.12s}.gp.in li:nth-child(4){animation-delay:.18s}.gp.in li:nth-child(5){animation-delay:.24s}.gp.in li:nth-child(n+6){animation-delay:.3s}
+.cw pre{padding-top:46px}
+.fr i{min-width:max-content;padding:0 10px}
+.frw{overflow-x:auto;border-radius:12px;margin-top:20px}.frw .fr{margin-top:0;min-width:480px}
+.fcap{color:var(--mute);font-size:13px;margin:8px 2px 0}
+.fc span{font-size:15px;align-items:safe center}
+th:first-child,td:first-child{position:sticky;left:0;background:var(--sf);z-index:1}
+td{transition:background .25s}tbody tr:hover td{background:var(--code)}
+.tc{color:var(--mute);font-style:italic}.ts{color:var(--c3)}.tp{color:var(--a)}.tk{color:var(--c1);font-weight:600}.tn{color:var(--c2)}
+</style>
+</head>
+<body>
+<header><nav aria-label="Sections"><b>Embedded Protocols</b><a href="#lab">Lab</a><a href="#guide">Guide</a><a href="#compare">Compare</a><a href="#quiz">Quiz</a><button id="th" aria-label="Switch light or dark theme">Theme</button></nav><div class="bar" id="bar"></div></header>
+<main>
+<div class="top" id="lab"><h1>See every bit on the wire.</h1>
+<p class="lead">Pick a protocol, type a byte in hex and watch the exact signals a logic analyser would capture for UART, SPI and I2C.</p>
+<div class="card lab rv"><div class="ctl" id="ps"></div>
+<div class="ctl" style="margin-top:-4px"><div class="hexw">Byte (hex) <input id="hex" value="A5" maxlength="2" aria-label="Byte in hex" spellcheck="false" autocomplete="off" autocapitalize="characters"><button class="go" id="re">Replay</button></div></div>
+<div class="scope"><svg id="sv" role="img" aria-label="Signal timing diagram"></svg></div><p class="note" id="nt"></p></div></div>
+
+<section id="guide"><h2>Protocol guide</h2><p class="lead">Ten protocols, from wires on a PCB to radios that cover kilometres. Each has a plain explanation, specs, key points and a working code example.</p>
+<div class="tabs" id="gt"></div><div class="card gp rv" id="gp"></div></section>
+
+<section id="compare"><h2>Side by side</h2><p class="lead">Use this table to pick the right bus for a design or to answer “which would you choose?” in an interview.</p>
+<div class="card tw rv"><table><thead><tr><th>Bus</th><th>Wires</th><th>Clock</th><th>Typical speed</th><th>Duplex</th><th>Nodes</th><th>Range</th><th>Used for</th></tr></thead><tbody>
+<tr><td>UART</td><td>TX, RX, GND</td><td>Asynchronous</td><td>9.6k to 3M baud</td><td>Full</td><td>2 (point to point)</td><td>Metres (TTL)</td><td>Debug console, GPS, Bluetooth modules</td></tr>
+<tr><td>SPI</td><td>SCK, MOSI, MISO, CS per slave</td><td>Synchronous</td><td>1 to 50+ MHz</td><td>Full</td><td>1 master, many slaves</td><td>Board level</td><td>Flash, displays, ADCs, SD cards</td></tr>
+<tr><td>I2C</td><td>SDA, SCL</td><td>Synchronous</td><td>100k, 400k, 1M, 3.4M</td><td>Half</td><td>Many masters and slaves, 7-bit address</td><td>Board level</td><td>Sensors, EEPROM, RTC, PMIC</td></tr>
+<tr><td>CAN</td><td>CANH, CANL (differential)</td><td>Asynchronous, bit timing</td><td>125k to 1M (FD to 8M)</td><td>Half</td><td>Up to about 110</td><td>40 m at 1M, 1 km at 50k</td><td>Cars, industrial, robotics</td></tr>
+<tr><td>RS-485</td><td>A, B (differential)</td><td>Asynchronous</td><td>Up to 10M</td><td>Half (2-wire)</td><td>32+ drops</td><td>Up to 1200 m</td><td>Modbus, building automation</td></tr>
+<tr><td>1-Wire</td><td>1 data + GND</td><td>Timed slots</td><td>About 16 kbps</td><td>Half</td><td>Many, unique 64-bit ID</td><td>Up to about 100 m</td><td>Temperature sensors, iButton</td></tr><tr><td>Modbus RTU</td><td>RS-485 or RS-232 pair</td><td>Asynchronous</td><td>9.6k to 115k baud</td><td>Half</td><td>1 master, up to 247 slaves</td><td>Up to 1200 m</td><td>PLCs, energy meters, drives</td></tr>
+<tr><td>MQTT</td><td>Any TCP/IP network</td><td>n/a</td><td>Depends on the link</td><td>Full</td><td>Many clients via a broker</td><td>Internet scale</td><td>IoT telemetry, dashboards</td></tr>
+<tr><td>Wi-Fi</td><td>2.4 / 5 / 6 GHz radio</td><td>n/a (radio)</td><td>10 Mbps to 1+ Gbps</td><td>Half (shared air)</td><td>Many per access point</td><td>30 to 100 m</td><td>Cloud devices, cameras</td></tr>
+<tr><td>Bluetooth LE</td><td>2.4 GHz radio</td><td>Frequency hopping</td><td>125 kbps to 2 Mbps</td><td>Half</td><td>Star, mesh option</td><td>10 to 100 m</td><td>Wearables, beacons, phone setup</td></tr>
+<tr><td>ZigBee</td><td>2.4 GHz radio (802.15.4)</td><td>n/a (radio)</td><td>250 kbps</td><td>Half</td><td>Mesh, thousands of nodes</td><td>10 to 100 m per hop</td><td>Smart home, lighting</td></tr>
+<tr><td>LoRa</td><td>Sub-GHz radio</td><td>n/a (radio)</td><td>0.3 to 50 kbps</td><td>Half</td><td>Star via gateways</td><td>2 to 15 km</td><td>Agriculture, metering, tracking</td></tr>
+</tbody></table></div></section>
+
+<section id="quiz"><h2>Interview flashcards</h2><p class="lead">Answer out loud first, then flip the card.</p><div class="cards rv" id="fcs"></div></section>
+</main>
+<footer>Tip: UART needs matching baud rates, SPI needs matching modes, I2C needs unique addresses.</footer>
+<script>
+document.documentElement.classList.add("js");
+const $=s=>document.querySelector(s),rm=matchMedia("(prefers-reduced-motion:reduce)").matches;
+const bitsOf=(v,msb)=>{const a=[...Array(8)].map((_,i)=>v>>i&1);return msb?a.reverse():a};
+/* waveform builder: returns traces, labels, slot width, note */
+function build(p,B){
+if(p==="UART"){const b=bitsOf(B,0),L=[[0,1,"idle",""],[1,1,"start","0"]];b.forEach((x,i)=>L.push([2+i,1,"D"+i,x]));L.push([10,1,"stop","1"],[11,1,"idle",""]);
+return{W:56,t:[{n:"TX",c:1,v:[1,0,...b,1,1]}],L,note:"8N1 frame: line idles high, a low start bit begins the frame, 8 data bits go out least significant bit first, then a high stop bit. There is no clock, so both ends must agree on the baud rate."}}
+if(p==="SPI"){const b=bitsOf(B,1),cs=[1,...Array(16).fill(0),1],ck=[0],mo=[0],L=[];b.forEach((x,i)=>{ck.push(0,1);mo.push(x,x);L.push([1+2*i,2,"D"+(7-i),x])});ck.push(0);mo.push(0);
+return{W:38,t:[{n:"CS",c:3,v:cs},{n:"SCK",c:1,v:ck},{n:"MOSI",c:2,v:mo}],L,note:"Mode 0 (CPOL 0, CPHA 0): chip select goes low, the master puts each bit on MOSI while SCK is low and the slave samples it on the rising edge. Most significant bit first."}}
+const ad=bitsOf(0x48,1).slice(1),da=bitsOf(B,1),sda=[1,0],scl=[1,1],L=[[0,2,"S",""]];
+const put=(bit,name)=>{const s=sda.length;sda.push(bit,bit);scl.push(0,1);L.push([s,2,name,bit])};
+ad.forEach((x,i)=>put(x,"A"+(6-i)));put(0,"W");put(0,"ACK");da.forEach((x,i)=>put(x,"D"+(7-i)));put(0,"ACK");
+const s=sda.length;sda.push(0,0,1);scl.push(0,1,1);L.push([s,3,"P",""]);
+return{W:17,t:[{n:"SDA",c:2,v:sda},{n:"SCL",c:1,v:scl}],L,note:"Address 0x48 with write bit, ACK pulled low by the slave, then your data byte and a second ACK. START is SDA falling while SCL is high; STOP is SDA rising while SCL is high. Data changes only while SCL is low."}}
+let proto="UART";
+function draw(){
+const raw=$("#hex").value.replace(/[^0-9a-f]/gi,"")||"0",B=parseInt(raw,16)&255,d=build(proto,B),pad=62,rh=64,n=d.t[0].v.length,Wd=pad+n*d.W+16,H=d.t.length*rh+58,y=(i,l)=>i*rh+(l?16:46);
+let s=`<svg id="sv" viewBox="0 0 ${Wd} ${H}" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${proto} timing diagram for byte ${raw.toUpperCase()}">`;
+d.L.forEach(l=>{const x=pad+l[0]*d.W;s+=`<line x1="${x}" x2="${x}" y1="4" y2="${H-8}" style="stroke:var(--line)" stroke-dasharray="3 4"/>`});
+d.t.forEach((t,i)=>{let p=`M${pad} ${y(i,t.v[0])}H${pad+d.W}`;for(let k=1;k<n;k++){if(t.v[k]!==t.v[k-1])p+=`V${y(i,t.v[k])}`;p+=`H${pad+(k+1)*d.W}`}
+s+=`<text x="8" y="${y(i,0)-10}" font-size="14" font-weight="700">${t.n}</text><path class="tr" pathLength="1" d="${p}" style="stroke:var(--c${t.c});animation-delay:${i*.18}s"/>`});
+d.L.forEach(l=>{const x=pad+(l[0]+l[1]/2)*d.W,dl=(.3+l[0]/n*1.6).toFixed(2);s+=`<g class="lb" style="animation-delay:${dl}s"><text x="${x}" y="${H-28}" text-anchor="middle" font-size="${d.W<30?11:13}" font-weight="700">${l[3]===""?l[2]:l[3]}</text>${l[3]===""?"":`<text x="${x}" y="${H-12}" text-anchor="middle" font-size="10.5" style="fill:var(--mute)">${l[2]}</text>`}</g>`});
+s+=`<rect id="sc" x="${pad}" y="0" width="2" height="${H}" style="fill:var(--a)" opacity=".8"/></svg>`;
+$("#sv").outerHTML=s;$("#nt").textContent=d.note;
+const sc=$("#sc");sc.animate([{transform:"translateX(0)",opacity:.9},{transform:`translateX(${n*d.W}px)`,opacity:0}],{duration:rm?10:1900,easing:"cubic-bezier(.45,0,.2,1)",fill:"forwards"})}
+["UART","SPI","I2C"].forEach(p=>{const b=document.createElement("button");b.className="pill";b.textContent=p;b.setAttribute("aria-pressed",p===proto);b.onclick=()=>{proto=p;[...$("#ps").children].forEach(x=>x.setAttribute("aria-pressed",x===b));draw()};$("#ps").append(b)});
+$("#hex").oninput=e=>{e.target.value=e.target.value.replace(/[^0-9a-f]/gi,"").toUpperCase();draw()};$("#re").onclick=draw;draw();
+/* guide */
+const G={
+UART:{t:"Asynchronous serial: two wires, no clock, agreed baud rate.",h:"A UART turns a parallel byte into a serial stream. The sender shifts out a start bit, the data bits (least significant first), an optional parity bit and the stop bit. The receiver detects the falling start edge, waits half a bit, then samples every bit at the baud rate. Use it for a simple private link such as a debug console, GPS or Bluetooth module.",s:[["Wires","TX, RX, GND"],["Clock","None (baud rate)"],["Speed","9600 to 3M baud"],["Duplex","Full"],["Topology","Point to point"]],
+p:["Both sides must use the same baud rate, data bits, parity and stop bits (115200 8N1 is the common default).","Receiver samples mid-bit, so clock error should stay under about 2 to 3 percent.","Errors: framing error (bad stop bit), parity error, overrun (data not read in time).","TTL UART is 0 to 3.3 V or 5 V. RS-232 uses ±3 to ±15 V and inverted logic, so it needs a level shifter such as MAX3232.","Optional flow control with RTS and CTS lines."],
+c:"void setup() {\n  Serial.begin(115200);          // 8N1 by default\n}\n\nvoid loop() {\n  if (Serial.available()) {\n    uint8_t b = Serial.read();   // read one byte\n    Serial.write(b);             // echo it back\n  }\n}"},
+SPI:{t:"Fast synchronous bus with a master clock and one chip select per slave.",h:"SPI is a shift register ring between master and slave. Each clock pulse moves one bit out on MOSI and one bit in on MISO, so every transfer reads and writes at once. The master pulls a slave’s CS low to select it. You get high speed and simple hardware at the cost of extra wires. Use it for flash, displays, SD cards and fast ADCs.",s:[["Wires","SCK, MOSI, MISO, CS"],["Clock","Master provides SCK"],["Speed","1 to 50+ MHz"],["Duplex","Full"],["Topology","1 master, N slaves"]],
+p:["Four modes set by CPOL (idle clock level) and CPHA (sample edge): Mode 0 idle low sample rising, Mode 1 idle low sample falling, Mode 2 idle high sample falling, Mode 3 idle high sample rising.","No addressing and no acknowledge: the CS line selects the slave, and the master cannot tell if nobody answered.","Each slave needs its own CS pin, or use daisy chaining where outputs feed the next device.","Data is shifted in and out at the same time, so every transfer is also a read.","Check the datasheet for mode, bit order and maximum clock."],
+c:"#include <SPI.h>\nconst int CS = 10;\n\nvoid setup() {\n  pinMode(CS, OUTPUT);\n  digitalWrite(CS, HIGH);\n  SPI.begin();\n}\n\nuint8_t readId() {\n  SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE0));\n  digitalWrite(CS, LOW);\n  SPI.transfer(0x9F);              // command\n  uint8_t id = SPI.transfer(0x00); // clock out the reply\n  digitalWrite(CS, HIGH);\n  SPI.endTransaction();\n  return id;\n}"},
+I2C:{t:"Two-wire shared bus where every device has an address.",h:"I2C lets many chips share two wires by giving each one an address. The master sends START, the 7-bit address and a read/write bit, and the addressed slave answers with ACK. Data bytes follow, each acknowledged, until STOP. To read a register you usually write its pointer first, then use a repeated START and read. Use it for sensors, EEPROMs and real-time clocks.",s:[["Wires","SDA, SCL (+ pull-ups)"],["Clock","Master provides SCL"],["Speed","100k, 400k, 1M, 3.4M"],["Duplex","Half"],["Topology","Multi-master, multi-slave"]],
+p:["Open-drain lines need pull-up resistors (about 4.7 kΩ at 100 kHz, 2.2 kΩ at 400 kHz). Too weak and edges are slow; too strong and devices cannot pull low.","Frame: START, 7-bit address plus R/W bit, ACK, data bytes each followed by ACK or NACK, STOP.","Slave can hold SCL low (clock stretching) when it needs more time.","Two devices with the same address clash. Fix with address pins, a multiplexer such as TCA9548A, or a second bus.","Multi-master arbitration: the master that releases SDA high while another drives it low loses and backs off.","Scan the bus to find devices; a stuck SDA often needs 9 clock pulses to recover."],
+c:"#include <Wire.h>\n\nvoid setup() {\n  Serial.begin(115200);\n  Wire.begin();\n}\n\nvoid loop() {\n  Wire.beginTransmission(0x48);   // TMP102-style sensor\n  Wire.write(0x00);               // pointer: temperature register\n  Wire.endTransmission(false);    // repeated start\n  Wire.requestFrom(0x48, 2);\n  uint8_t hi = Wire.read();       // separate calls: C++ does not fix the order of two reads in one expression\n  uint8_t lo = Wire.read();\n  int16_t raw = (int16_t)((hi << 8) | lo);\n  Serial.println((raw >> 4) * 0.0625);  // 12-bit, 0.0625 C per step\n  delay(1000);\n}"},
+CAN:{t:"Robust differential multi-master bus built for noisy vehicles.",h:"CAN is a broadcast bus: every node sees every message and uses the ID to decide if it cares. If two nodes start together, the lower ID wins arbitration bit by bit and the winning frame is not damaged. Receivers check the CRC and any node that got the frame correctly drives the ACK slot. Use it where reliability in electrical noise matters, such as vehicles and machines.",s:[["Wires","CANH, CANL"],["Clock","Bit timing, resynchronised"],["Speed","Up to 1M (FD 8M data)"],["Duplex","Half"],["Topology","Multi-master bus"]],
+p:["Messages carry an ID, not a destination address. Lower ID means higher priority and wins arbitration without data loss.","Differential signalling gives strong noise immunity. Put a 120 Ω terminator at each end of the bus (60 Ω measured across the pair).","Classic CAN data is 0 to 8 bytes; CAN FD allows up to 64 bytes and a faster data phase.","Bit stuffing inserts an opposite bit after five identical bits to keep edges for synchronisation.","Built-in CRC, ACK slot and error counters isolate faulty nodes (error active, passive, bus-off).","Needs a controller plus a transceiver (for example MCP2515 with TJA1050)."],
+c:"#include <mcp_can.h>\nMCP_CAN CAN(10);                    // CS pin\n\nvoid setup() {\n  Serial.begin(115200);\n  CAN.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ);\n  CAN.setMode(MCP_NORMAL);\n}\n\nvoid loop() {\n  byte data[2] = {0x12, 0x34};\n  CAN.sendMsgBuf(0x100, 0, 2, data); // ID 0x100, 2 bytes\n  delay(100);\n}",
+f:[["SOF",1,"#7cc4ff"],["ID",11,"#3ee6d0"],["RTR",1,"#ffb547"],["Ctrl",6,"#ff8fc0"],["Data 0-8 B",18,"#7cc4ff"],["CRC",16,"#3ee6d0"],["ACK",2,"#ffb547"],["EOF",7,"#ff8fc0"]]},
+Modbus:{t:"Master-slave industrial protocol for reading and writing registers.",h:"Modbus is a very simple request and response protocol. A master sends a frame with a slave address, a function code (what to do) and data; the addressed slave replies with the data or an error. It runs as RTU (binary over RS-485 or RS-232), ASCII, or TCP on port 502. It is everywhere in PLCs, energy meters, drives and sensors.",s:[["Layer","Application protocol"],["Variants","RTU, ASCII, TCP (502)"],["Model","Master asks, slave answers"],["Addresses","1 to 247 (0 = broadcast)"],["Error check","CRC-16 (RTU)"]],p:["Data lives in four tables: coils (read/write bits), discrete inputs (read-only bits), holding registers (read/write 16-bit) and input registers (read-only 16-bit).","Common function codes: 01 read coils, 02 read discrete inputs, 03 read holding registers, 04 read input registers, 05 write single coil, 06 write single register, 15 write multiple coils, 16 write multiple registers.","RTU frames are separated by silence of at least 3.5 character times; the CRC is sent low byte first.","Errors return the function code with bit 7 set plus an exception code (01 illegal function, 02 illegal address, 03 illegal value, 04 device failure).","Register numbers like 40001 are 1-based documentation; the wire uses address 0. Mixing these up is the classic off-by-one bug.","Broadcast (address 0) is accepted by all slaves and never answered."],c:`#include <ModbusMaster.h>
+ModbusMaster node;
+
+void setup() {
+  Serial.begin(115200);
+  Serial1.begin(9600, SERIAL_8N1);   // RS-485 module: toggle DE/RE in preTransmission()/postTransmission() unless it auto-switches
+  node.begin(1, Serial1);            // slave ID 1
+}
+
+void loop() {
+  uint8_t r = node.readHoldingRegisters(0, 2);  // function 03
+  if (r == node.ku8MBSuccess) {
+    Serial.println(node.getResponseBuffer(0));
+  }
+  delay(1000);
+}`,f:[["Silence",3,"#7cc4ff"],["Addr",2,"#3ee6d0"],["Func",2,"#ffb547"],["Data (n bytes)",10,"#ff8fc0"],["CRC16",4,"#7cc4ff"],["Silence",3,"#3ee6d0"]]},
+MQTT:{t:"Lightweight publish and subscribe messaging for IoT.",h:"Devices do not talk to each other directly. They connect to a broker over TCP, publish messages to topics such as home/room1/temp, and subscribe to topics they want. The broker forwards each message to every subscriber. This decouples senders from receivers and works well on weak or intermittent links.",s:[["Transport","TCP (TLS on 8883)"],["Ports","1883 plain, 8883 TLS"],["Model","Publish / subscribe"],["Header","2 bytes minimum"],["Versions","3.1.1 and 5"]],p:["Topics are hierarchical. Wildcards: + matches one level, # matches all remaining levels.","QoS 0 is at most once, QoS 1 at least once (may duplicate), QoS 2 exactly once (slowest).","Retained messages let a new subscriber instantly get the last value on a topic.","Last Will and Testament: the broker publishes a preset message if the client vanishes, which is how you detect offline devices.","Keep-alive pings detect dead connections. Persistent sessions queue QoS 1 and 2 messages while a client is offline.","MQTT 5 adds reason codes, shared subscriptions, message expiry and user properties. Always secure with TLS and credentials."],c:`#include <WiFi.h>
+#include <PubSubClient.h>
+
+WiFiClient net;
+PubSubClient mqtt(net);
+
+void setup() {
+  WiFi.begin("SSID", "PASSWORD");
+  while (WiFi.status() != WL_CONNECTED) delay(300);
+  mqtt.setServer("broker.hivemq.com", 1883);   // public test broker only
+  mqtt.connect("esp32-node-01");
+}
+
+void loop() {
+  if (!mqtt.connected()) {          // reconnect if the link dropped
+    mqtt.connect("esp32-node-01");
+    delay(500);
+  }
+  mqtt.loop();                      // keeps the connection alive
+  mqtt.publish("home/room1/temp", "24.5");
+  delay(5000);
+}`,f:[["Fixed header",3,"#7cc4ff"],["Remaining len",3,"#3ee6d0"],["Topic",8,"#ffb547"],["Packet ID",3,"#ff8fc0"],["Payload",10,"#7cc4ff"]]},
+"Wi-Fi":{t:"High-speed IP networking over 2.4, 5 and 6 GHz radio.",h:"Wi-Fi (IEEE 802.11) gives a device a normal IP connection through an access point, so it can use HTTP, MQTT, TCP and the whole Internet. A device scans for a network, authenticates (WPA2 or WPA3), associates, then gets an address by DHCP. It offers high throughput but uses much more power than BLE, ZigBee or LoRa.",s:[["Standard","IEEE 802.11 (Wi-Fi 4 to 7)"],["Bands","2.4, 5, 6 GHz"],["Speed","10 Mbps to 1+ Gbps"],["Range","About 30 to 100 m"],["Power","High; use sleep modes"]],p:["Modes: station (client), access point (hosts a network), or both. ESP32 can run both at once.","On 2.4 GHz use the non-overlapping channels 1, 6 and 11. Many microcontrollers support 2.4 GHz only.","Security: WPA2-PSK is common, WPA3 adds stronger key exchange; never leave open networks or hard-coded passwords in shipped code.","Provisioning is the hard part: use an AP-mode portal, SmartConfig or BLE provisioning instead of fixed credentials.","Battery designs wake, connect fast (static IP helps), send data and return to deep sleep.","Common stack: Wi-Fi, then TCP/IP, then TLS, then HTTP or MQTT."],c:`#include <WiFi.h>
+#include <HTTPClient.h>
+
+void setup() {
+  Serial.begin(115200);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin("SSID", "PASSWORD");
+  while (WiFi.status() != WL_CONNECTED) delay(300);
+  Serial.println(WiFi.localIP());
+
+  HTTPClient http;
+  http.begin("http://example.com");
+  Serial.println(http.GET());       // HTTP status code
+  http.end();
+}
+
+void loop() {}`},
+Bluetooth:{t:"Short-range radio: Classic for streaming, Low Energy for tiny batteries.",h:"Bluetooth has two families. Classic (BR/EDR) keeps a continuous link for audio and serial replacement. Bluetooth Low Energy (BLE) sleeps most of the time and sends short bursts, so a coin cell can last years. In BLE a peripheral advertises, a central such as a phone connects, and data is exposed as GATT services holding characteristics you read, write or subscribe to.",s:[["Band","2.4 GHz, frequency hopping"],["BLE speed","125 kbps to 2 Mbps"],["Range","10 to 100 m"],["Roles","Central, peripheral"],["Power","BLE very low"]],p:["BLE advertises on channels 37, 38 and 39, then connects and hops across 37 data channels. Classic uses 79 channels.","GATT hierarchy: profile, services, characteristics (value plus properties read, write, notify), descriptors. UUIDs identify them.","Notify lets the peripheral push changes without polling, which saves power.","Pairing and bonding exchange keys; LE Secure Connections uses ECDH. Bluetooth 5 added 2M PHY and Coded PHY for long range.","Classic profiles: SPP (serial), A2DP (audio), HFP (calls). Bluetooth Mesh builds many-to-many networks on BLE.","Typical uses: wearables, beacons, sensors and phone-based device setup."],c:`#include <BluetoothSerial.h>   // Classic SPP: original ESP32 only (not S3/C3)
+BluetoothSerial bt;
+
+void setup() {
+  bt.begin("ESP32-Demo");           // visible device name
+}
+
+void loop() {
+  if (bt.available()) {
+    bt.write(bt.read());            // echo what the phone sends
+  }
+}`,f:[["Preamble",2,"#7cc4ff"],["Access addr",5,"#3ee6d0"],["PDU header",3,"#ffb547"],["Payload (up to 251 B)",16,"#ff8fc0"],["CRC",3,"#7cc4ff"]]},
+ZigBee:{t:"Low-power mesh networking on IEEE 802.15.4.",h:"ZigBee builds a self-healing mesh of small, cheap, battery-friendly nodes. One coordinator forms the network and picks the channel and PAN ID; routers relay packets for others; end devices sleep and wake only to talk to a parent router. Messages hop across the mesh to extend range, which suits lights, switches and sensors around a building.",s:[["Radio","IEEE 802.15.4"],["Band","2.4 GHz (channels 11 to 26)"],["Speed","250 kbps"],["Range","10 to 100 m per hop"],["Security","AES-128"]],p:["Roles: coordinator (one per network), router (mains powered, relays), end device (sleepy, battery).","Addresses: 16-bit PAN ID for the network, 64-bit unique IEEE address, 16-bit short address assigned on joining.","Application layer uses endpoints, clusters (for example On/Off, Level, Temperature) and attributes, which is what makes products from different vendors interoperate.","Routing is AODV-style, so the mesh finds new paths when a node fails.","Zigbee 3.0 unified the old profiles. Thread also uses 802.15.4 but carries IPv6, and Matter can run over Thread.","Frequent trouble: Wi-Fi channels overlapping ZigBee channels, so choose ZigBee channels 15, 20, 25 or 26 away from Wi-Fi 1, 6 and 11."],c:`// XBee ZigBee module in transparent mode: it is just a UART.
+// Configure PAN ID and roles once with XCTU.
+void setup() {
+  Serial1.begin(9600);               // XBee connected to Serial1
+}
+
+void loop() {
+  Serial1.println("temp=24.5");      // delivered to the coordinator
+  delay(2000);
+}`,f:[["Preamble",4,"#7cc4ff"],["SFD",1,"#3ee6d0"],["Len",1,"#ffb547"],["MAC header",9,"#ff8fc0"],["Payload",18,"#7cc4ff"],["FCS",2,"#3ee6d0"]]},
+LoRa:{t:"Very long range, very low power radio for tiny data.",h:"LoRa is a radio modulation (chirp spread spectrum) that trades speed for range: each symbol is a frequency sweep that can be decoded far below the noise floor. LoRaWAN is the network protocol built on top: nodes send uplinks to gateways, which forward them to a network server. Packets are small and infrequent, which is perfect for farms, meters and trackers.",s:[["Band","433 / 868 / 865-867 / 915 MHz"],["Speed","0.3 to 50 kbps"],["Range","2 to 15 km"],["Payload","About 51 to 242 bytes"],["Topology","Star of stars"]],p:["Spreading factor SF7 to SF12: higher SF means longer range and lower data rate but much longer airtime.","Bandwidth 125, 250 or 500 kHz; coding rate adds forward error correction.","LoRa is the physical layer; LoRaWAN adds addressing, AES-128 security and network management.","Device classes: A (receive only after sending, lowest power), B (scheduled receive slots), C (almost always listening).","Join with OTAA (keys negotiated, preferred) or ABP (static keys).","Regulations limit duty cycle (for example 1 percent in Europe) and frequency band varies by region, so always check local rules."],c:`#include <SPI.h>
+#include <LoRa.h>            // SX127x module over SPI
+
+void setup() {
+  Serial.begin(115200);
+  if (!LoRa.begin(433E6)) while (1);   // use your region band
+  LoRa.setSpreadingFactor(9);          // range vs speed
+}
+
+void loop() {
+  LoRa.beginPacket();
+  LoRa.print("temp=24.5");
+  LoRa.endPacket();
+  delay(5000);                         // respect duty cycle
+}`,f:[["Preamble",8,"#7cc4ff"],["Header",3,"#3ee6d0"],["Payload",14,"#ffb547"],["CRC",2,"#ff8fc0"]]}};
+const esc=t=>t.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const hl=t=>esc(t).replace(/(\/\/.*)|("(?:[^"\\\n]|\\.)*")|(^#.*$)|\b(void|int|uint8_t|int16_t|byte|const|if|while|return|for|else|bool|char|float)\b|\b(0x[0-9A-Fa-f]+|\d+(?:\.\d+)?(?:E\d+)?)\b/gm,(m,a,b,c,d)=>`<span class="${a?"tc":b?"ts":c?"tp":d?"tk":"tn"}">${m}</span>`);
+let cur="UART";
+function guide(k){cur=k;[...$("#gt").children].forEach(b=>b.setAttribute("aria-pressed",b.textContent===k));const g=G[k],gp=$("#gp");
+gp.innerHTML=`<h3>${k}</h3><p class="tg">${g.t}</p><p style="margin:0 0 22px;max-width:72ch">${g.h||""}</p><div class="cols"><dl>${g.s.map(r=>`<dt>${r[0]}</dt><dd>${r[1]}</dd>`).join("")}</dl><ul>${g.p.map(x=>`<li>${x}</li>`).join("")}</ul></div>${g.f?`<div class="frw"><div class="fr">${g.f.map(f=>`<i style="--w:${f[1]};--c:${f[2]}">${f[0]}</i>`).join("")}</div></div><p class="fcap">Fields drawn roughly to scale; variable-length parts are shortened.</p>`:""}<div class="cw"><button class="cp">Copy</button><pre><code></code></pre></div>`;
+gp.querySelector("code").innerHTML=hl(g.c);
+gp.querySelector(".cp").onclick=async e=>{const b=e.currentTarget;let ok=true;try{await navigator.clipboard.writeText(g.c)}catch(x){ok=false;const r=document.createRange();r.selectNodeContents(gp.querySelector("code"));const q=getSelection();q.removeAllRanges();q.addRange(r)}b.textContent=ok?"Copied":"Press Ctrl+C";setTimeout(()=>b.textContent="Copy",1600)};
+gp.classList.remove("in");void gp.offsetWidth;gp.classList.add("in");const f=gp.querySelector(".fr");if(f)requestAnimationFrame(()=>requestAnimationFrame(()=>f.classList.add("on")))}
+Object.keys(G).forEach(k=>{const b=document.createElement("button");b.className="pill";b.textContent=k;b.onclick=()=>guide(k);$("#gt").append(b)});guide("UART");
+/* flashcards */
+const Q=[["Why does I2C need pull-up resistors?","Devices only pull the lines low (open-drain). The resistors pull them high when released, and this also allows several devices to share the bus safely."],
+["UART works with no clock. How?","Both sides agree on a baud rate. The start bit gives a falling edge to sync on, and the receiver samples each bit in its middle."],
+["What are SPI modes 0 to 3?","They combine CPOL (clock idle level) and CPHA (sample edge). Mode 0: idle low, sample rising. Mode 3: idle high, sample rising. Master and slave must match."],
+["How does CAN arbitration work?","Nodes send their ID bit by bit. A dominant 0 beats a recessive 1, so the lowest ID wins and the others back off with no corruption."],
+["Why 120 Ω on a CAN bus?","Termination at both ends matches the cable impedance and stops reflections. Measuring about 60 Ω between CANH and CANL means both are present."],
+["I2C vs SPI: which to choose?","I2C: few pins, many devices, slower, needs addresses. SPI: faster, full duplex, simple, but one CS per slave and no ACK."],
+["What is clock stretching?","An I2C slave holds SCL low to make the master wait until it is ready. Some master peripherals do not support it, which causes bugs."],
+["What is bit stuffing?","CAN inserts an opposite bit after five equal bits so receivers always see edges to resynchronise. Receivers remove the extra bits."],
+["MQTT QoS 0, 1 and 2?","0: at most once, no ack. 1: at least once, may duplicate. 2: exactly once using a four-step handshake. Higher QoS costs more traffic and latency."],
+["LoRa vs LoRaWAN?","LoRa is the radio modulation (physical layer). LoRaWAN is the network protocol on top: gateways, network server, addressing, AES security and device classes."],
+["BLE vs Bluetooth Classic?","Classic keeps a continuous link for audio and serial. BLE sleeps and sends short bursts using GATT, so it runs for years on a coin cell."],
+["How do you spot a Modbus RTU frame end?","By silence of at least 3.5 character times on the line, then the receiver checks the CRC-16 sent low byte first."],
+["Why does ZigBee use a mesh?","Routers relay for each other, so range extends over many hops and the network re-routes around a failed node. End devices can sleep to save battery."],
+["Which wireless link for a battery sensor 5 km away?","LoRa or LoRaWAN: low power and kilometres of range, accepting tiny payloads and low data rate. Wi-Fi and BLE would not reach that far."]];
+Q.forEach(q=>{const b=document.createElement("button");b.className="fc";b.setAttribute("aria-pressed","false");b.innerHTML=`<i><span>${q[0]}</span><span>${q[1]}</span></i>`;b.onclick=()=>b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")!=="true");$("#fcs").append(b)});
+/* progress + theme */
+const bar=$("#bar");let tk=false;addEventListener("scroll",()=>{if(tk)return;tk=true;requestAnimationFrame(()=>{const h=document.documentElement;bar.style.transform=`scaleX(${Math.min(1,scrollY/Math.max(1,h.scrollHeight-innerHeight))})`;tk=false})},{passive:true});
+$("#th").onclick=()=>{const r=document.documentElement,dk=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.dataset.theme=dk?"light":"dark";try{localStorage.setItem("th",r.dataset.theme)}catch(e){}};
+try{const t=localStorage.getItem("th");if(t)document.documentElement.dataset.theme=t}catch(e){}
+if("IntersectionObserver"in window){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add("show");io.unobserve(e.target)}}),{rootMargin:"0px 0px -8% 0px",threshold:.08});document.querySelectorAll(".rv").forEach(el=>io.observe(el))}else document.querySelectorAll(".rv").forEach(el=>el.classList.add("show"));
+</script>
+</body>
+</html>
